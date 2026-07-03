@@ -1,0 +1,5 @@
+vendor/*.tar.gz
+vendor/*.gz
+vendor/*/
+!vendor/README.md
+build/
