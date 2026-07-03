@@ -65,7 +65,35 @@ sh scripts/build.sh v9
 
 ## Port status
 
-**SCAFFOLD ONLY.** No V8/V9/V10 tool has yet been ported to Darwin.
+**PARTIAL — 2 V9 tools working**.
+
+Working V9 tools on Darwin arm64 (2026-07-03):
+
+  echo   — 33 KB Mach-O 64-bit arm64.  Confirmed:
+             ./build/v9/echo 'V9 echo works on Darwin arm64!'
+             → V9 echo works on Darwin arm64!
+
+  cat    — 34 KB Mach-O 64-bit arm64.  Confirmed:
+             echo hi | ./build/v9/cat
+             → hi
+
+Build recipe (single-source tools):
+
+  # 1. Fetch V9 batterpudding.tar.gz from TUHS under your own reading
+  curl -L https://www.tuhs.org/Archive/Distributions/Research/Norman_v9/batterpudding.tar.gz \
+      -o vendor/v9/batterpudding.tar.gz
+  mkdir -p vendor/v9
+  tar xzf vendor/v9/batterpudding.tar.gz -C vendor/v9/
+
+  # 2. Build a specific single-source V9 tool
+  sh scripts/build-v9-tool.sh echo
+  sh scripts/build-v9-tool.sh cat
+
+Multi-source V9 tools (sh, ed, mail, adb, etc.) not yet ported —
+their internal K&R conflicts require per-tool patches.
+
+**SCAFFOLD** for V8/V9/V10 as a whole system remains — the working
+tools above are just single-source utilities.
 Realistic estimate: 3-5 days per Research Unix edition, per tool
 subset.
 
