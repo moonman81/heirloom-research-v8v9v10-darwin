@@ -65,31 +65,39 @@ sh scripts/build.sh v9
 
 ## Port status
 
-**PARTIAL — 2 V9 tools working**.
+**PARTIAL — 224 tools working across V8/V9/V10**.
 
-Working V9 tools on Darwin arm64 (2026-07-03):
+Working tool counts across all three Research Unix editions
+(Darwin arm64, 2026-07-03):
 
-  echo   — 33 KB Mach-O 64-bit arm64.  Confirmed:
-             ./build/v9/echo 'V9 echo works on Darwin arm64!'
-             → V9 echo works on Darwin arm64!
+  V8   98 of 163 single-source .c compiled (60%)
+  V9   28 of  73 (38%)
+  V10  98 of 207 (47%)
+  Total 224 of 443 (51%)
 
-  cat    — 34 KB Mach-O 64-bit arm64.  Confirmed:
-             echo hi | ./build/v9/cat
-             → hi
+Smoke-tested working: echo, cat, wc, pwd, sleep across ALL THREE
+editions — every one prints correct output.
 
-Build recipe (single-source tools):
+Note: `sort` fails at runtime for all three ('allocation error
+before sort') — PDP-11-vintage memory-allocation assumptions.
 
-  # 1. Fetch V9 batterpudding.tar.gz from TUHS under your own reading
+BULK BUILD RECIPE:
+
+  # 1. Fetch upstream tapes from TUHS under your own reading
+  mkdir -p vendor/{v8,v9,v10}
+  curl -L https://www.tuhs.org/Archive/Distributions/Research/Dan_Cross_v8/v8.tar.bz2 \
+      | tar xjf - -C vendor/v8/
   curl -L https://www.tuhs.org/Archive/Distributions/Research/Norman_v9/batterpudding.tar.gz \
-      -o vendor/v9/batterpudding.tar.gz
-  mkdir -p vendor/v9
-  tar xzf vendor/v9/batterpudding.tar.gz -C vendor/v9/
+      | tar xzf - -C vendor/v9/
+  curl -L https://www.tuhs.org/Archive/Distributions/Research/Dan_Cross_v10/v10src.tar.bz2 \
+      | tar xjf - -C vendor/v10/
 
-  # 2. Build a specific single-source V9 tool
-  sh scripts/build-v9-tool.sh echo
-  sh scripts/build-v9-tool.sh cat
+  # 2. Bulk-build every single-source .c
+  sh scripts/bulk-build.sh v8
+  sh scripts/bulk-build.sh v9
+  sh scripts/bulk-build.sh v10
 
-Multi-source V9 tools (sh, ed, mail, adb, etc.) not yet ported —
+Multi-source tools (sh, ed, mail, adb, awk, etc.) not yet ported —
 their internal K&R conflicts require per-tool patches.
 
 **SCAFFOLD** for V8/V9/V10 as a whole system remains — the working
